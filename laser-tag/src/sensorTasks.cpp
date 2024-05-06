@@ -11,6 +11,7 @@ void taskSensorRecord1(void* pvParameters){
 			parseResults(1);
             sendResults(1);
 			flag1 = false;
+    		interruptEnabled = true;
 		}
 	}
 }
@@ -22,7 +23,9 @@ void taskSensorRecord2(void* pvParameters){
 			recordSensor(2);
 			parseResults(2);
             sendResults(2);
+			
 			flag2 = false;
+    		interruptEnabled = true;
 		}
 	}
 }

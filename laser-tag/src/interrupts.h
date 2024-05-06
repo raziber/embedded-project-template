@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+volatile bool interruptEnabled = true;
+
 volatile bool flag1 = false;
 volatile bool flag2 = false;
 
