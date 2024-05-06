@@ -7,9 +7,5 @@
 void setup() {
 	sensorsPinModeSetUp();
 	Serial.begin(115200);
-
 	setUpSensorTasks();
-}
-
-void loop() {
 }

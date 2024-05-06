@@ -1,4 +1,5 @@
 #include "irCommsFunctions.h"
+#include "configuration.h"
 #include <Arduino.h>
 
 void recordSensor(int sensorId){
