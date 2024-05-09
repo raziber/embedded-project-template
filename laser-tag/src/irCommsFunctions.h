@@ -3,6 +3,5 @@
 
 void recordSensor(int sensorId);
 void parseResults(int sensorId);
-void sensorsPinModeSetUp();
 
 #endif

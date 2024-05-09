@@ -2,29 +2,35 @@
 #include "configuration.h"
 #include <Arduino.h>
 
-// Define the type for clarity
-typedef void (*IsrFunction)();
+volatile bool interruptEnabled = true;
+volatile bool *sensorFlags = nullptr;
 
-// Array of function pointers
-IsrFunction isrFunctions[] = {isr1, isr2};
+// ISR that receives a specific pin index as an argument
+void IRAM_ATTR genericISR(void *arg) {
+    // block all other interrupts
+    interruptEnabled = false;
 
-// set up sensor pins as inputs
-void sensorsInterruptsSetUp(){
-	for (int i = 0; i < sizeof(ports)/sizeof(ports[0]); i++)
-	{
-		pinMode(ports[i], INPUT);
-        attachInterrupt(digitalPinToInterrupt(ports[i]), isrFunctions[i], RISING);
-	}
+    // tell sensor task to start proccessing a hit
+    int index = *((int *)arg);
+    sensorFlags[index] = true;
 }
 
-void IRAM_ATTR isr1(){
-    if(!interruptEnabled) return;
-    interruptEnabled = false;
-    flag1 = true;
-}
+// Setup interrupts with arguments
+void sensorsInterruptsSetUp() {
+    int *indices = new int[numPorts];
+    sensorFlags = new volatile bool[numPorts];
 
-void IRAM_ATTR isr2(){
-    if(!interruptEnabled) return;
-    interruptEnabled = false;
-    flag2 = true;
+    for (int i = 0; i < numPorts; i++) {
+        sensorFlags[i] = false;
+
+        indices[i] = i;  // Store the index in a static array
+        pinMode(ports[i], INPUT_PULLUP);  // Set pin mode
+        attachInterruptArg(digitalPinToInterrupt(ports[i]), genericISR, &indices[i], RISING);  // Pass index
+    }
+
+    #ifdef SERIAL_PRINT
+        Serial.println("All sensor interrupts configured successfully.");
+    #endif
+
+    delete[] indices;  // Cleanup
 }

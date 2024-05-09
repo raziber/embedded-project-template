@@ -2,35 +2,33 @@
 #include "irCommsFunctions.h"
 #include "interrupts.h"
 #include "game.h"
+#include "configuration.h"
 
-void taskSensorRecord1(void* pvParameters){
+void taskSensorRecord(void* pvParameters){
+	int portIndex = *(int*)pvParameters;
 	while(true){
-		if (flag1)
-		{
-			recordSensor(1);
-			parseResults(1);
-            sendResults(1);
-			flag1 = false;
-    		interruptEnabled = true;
-		}
-	}
-}
-
-void taskSensorRecord2(void* pvParameters){
-	while(true){
-		if (flag2)
-		{
-			recordSensor(2);
-			parseResults(2);
-            sendResults(2);
-			
-			flag2 = false;
+		if(sensorFlags[portIndex]){
+			recordSensor(portIndex);
+			parseResults(portIndex);
+            sendResults(portIndex);
+			sensorFlags[portIndex] = false;
     		interruptEnabled = true;
 		}
 	}
 }
 
 void setUpSensorTasks(){
-    xTaskCreate(taskSensorRecord1, "taskSensorRecord1", 1024, NULL, 1, NULL);
-    xTaskCreate(taskSensorRecord2, "taskSensorRecord2", 1024, NULL, 1, NULL);
+    // Array of indices to pass to the ISR
+	int* indices = new int[numPorts];
+
+    for (int i = 0; i < numPorts; i++) {
+        indices[i] = i;  // Store the index in a static array
+		char taskName[21]; // the max length of a task name including null terminator
+		snprintf(taskName, sizeof(taskName), "taskSensorRecord%d", i);
+        xTaskCreate(taskSensorRecord, taskName, 1024, &indices[i], 1, NULL);
+    }
+
+    #ifdef SERIAL_PRINT
+        Serial.println("All sensor interrupts configured successfully.");
+    #endif
 }

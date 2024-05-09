@@ -2,13 +2,12 @@
 #define INTERRUPTS_H
 
 #include <Arduino.h>
+#include "configuration.h"
 
-volatile bool interruptEnabled = true;
+extern volatile bool interruptEnabled;
+extern volatile bool *sensorFlags;
 
-volatile bool flag1 = false;
-volatile bool flag2 = false;
-
-void IRAM_ATTR isr1();
-void IRAM_ATTR isr2();
+void IRAM_ATTR genericISR(void *arg);
+void sensorsInterruptsSetUp();
 
 #endif

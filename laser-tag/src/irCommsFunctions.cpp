@@ -5,5 +5,4 @@ void recordSensor(int sensorId){
 }
 
 void parseResults(int sensorId){
-
 }
