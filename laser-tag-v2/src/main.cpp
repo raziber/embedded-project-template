@@ -1,9 +1,9 @@
 #ifdef EMBEDDED_BUILD
 
 #include <Arduino.h>
+#include "led.hpp"
 
 void setup() {
-    Serial.begin(115200);
 }
 
 void loop() {
