@@ -2,8 +2,6 @@
 #include <Arduino.h>
 #include "led.hpp"
 
-// #define LED_BUILTIN 5
-
 TEST(setLED, test_if_sets_led_to_high){
     setLED(HIGH);
     pinMode(LED_BUILTIN, INPUT);
